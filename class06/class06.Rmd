@@ -1,0 +1,310 @@
+---
+title: "Class06"
+author: "Alina Kang"
+date: "1/23/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+plot(1:5)
+```
+
+
+# Functions
+
+## level 2 heading
+
+### level 3 heading
+
+lets see more about **file import** (i.e. reading files into R). The main read function in base R is`read.table()`
+
+
+```{r}
+read.table("test1.txt")
+```
+
+```{r}
+read.table("test2.txt")
+```
+
+```{r}
+read.table("test3.txt")
+```
+
+We need to add arguments to get this file imported
+
+```{r}
+t1 <- read.table("test1.txt", sep = ",", header = TRUE)
+```
+
+Or I could just use `read.csv()` which has the arguents I want in this case!
+```{r}
+t1 <- read.csv("test1.txt")
+```
+
+```{r}
+t2 <- read.csv("test2.txt")
+```
+
+```{r}
+t3 <- read.csv("test3.txt")
+```
+
+# Back to functions
+
+Our first example
+
+```{r}
+add <- function(x, y=1) {
+ # Sum the input x and y
+ x + y
+}
+```
+
+Let's try using this function
+```{r}
+add(7,3)
+```
+
+How doe sthis work with vectors as input
+```{r}
+add(c(1,2,4))
+```
+```{r}
+add(c(1,2,4), 4)
+```
+
+
+What is this `range()` function?
+
+```{r}
+x <- c(4,4,10,3,11)
+max(x)
+min(x)
+```
+
+
+
+
+
+```{r}
+rng <- range(x)
+```
+```{r}
+rescale <- function(x) {
+ rng <-range(x)
+ (x - rng[1]) / (rng[2] - rng[1])
+}
+```
+
+
+```{r}
+rescale(x)
+```
+```{r}
+rescale(1:10)
+```
+
+
+```{r}
+rescale( c(1,2,NA,3,10) )
+```
+
+```{r}
+x <- c(1,2,NA,3,10)
+rng <- range(x)
+```
+
+
+```{r}
+rng <- range(x, no.rm = TRUE)
+rng
+```
+```{r}
+rescale2 <- function(x) {
+  rng <- range(x, no.rm = TRUE)
+  (x - rng[1]) / (rng[2] - rng[1])
+}
+```
+
+```{r}
+rescale2(c(1,2,NA,3,10))
+```
+
+rescale <- function(x, na.rm=TRUE, plot=FALSE) {
+ rng <-range(x, na.rm=na.rm)
+ print("Hello")
+ answer <- (x - rng[1]) / (rng[2] - rng[1])
+ return(answer)
+ print("is it me you are looking for?")
+ if(plot) {
+ plot(answer, typ="b", lwd=4)
+ }
+ print("I can see it in ...")
+ return(answer)
+}
+
+```{r}
+rescale(x, plot = TRUE)
+```
+
+
+```{r}
+library(bio3d)
+s1 <- read.pdb("4AKE") # kinase with drug
+s2 <- read.pdb("1AKE") # kinase no drug
+s3 <- read.pdb("1E4Y") # kinase with drug
+s1.chainA <- trim.pdb(s1, chain="A", elety="CA")
+s2.chainA <- trim.pdb(s2, chain="A", elety="CA")
+s3.chainA <- trim.pdb(s1, chain="A", elety="CA")
+s1.b <- s1.chainA$atom$b
+s2.b <- s2.chainA$atom$b
+s3.b <- s3.chainA$atom$b
+plotb3(s1.b, sse=s1.chainA, typ="l", ylab="Bfactor")
+plotb3(s2.b, sse=s2.chainA, typ="l", ylab="Bfactor")
+plotb3(s3.b, sse=s3.chainA, typ="l", ylab="Bfactor")
+```
+
+
+hc <- hclust( dist( rbind(s1.b, s2.b, s3.b) ) )
+plot(hc)
+
+
+```{r}
+s1 <- read.pdb("4AKE") # kinase with drug
+s1
+```
+> Q1. What type of object is returned from `read.pdb()`
+
+It is a list of 8 things and of class "pdb", "sse"
+ 
+
+```{r}
+class(s1)
+```
+
+```{r}
+str(s1)
+```
+
+```{r}
+s1$seqres
+```
+
+
+```{r}
+aa321(s1$seqres)
+```
+
+```{r}
+s1$atom
+```
+
+> Q2. What does the trim.pdb() function do?
+  
+It trims it down into a new, smaller PDB object, containing a subset of atoms, from a given larger PDB object.
+
+> Q3.
+
+> Q4.
+
+> Q5. Which proteins are more similar to each other in their B-factor trends. How could you quantify this?
+
+```{r}
+plotb3(s1.b, sse=s1.chainA, typ="l", ylab="Bfactor")
+points(s2.b, typ="l", ylab="Bfactor")
+```
+
+
+```{r}
+hc <- hclust( dist( rbind(s1.b, s2.b, s3.b) ) )
+plot(hc)
+```
+
+s1.b and s3.b are more similar to each other in their B-factor trends, as shown in the dendrogram above. They are closer to each other than the more distant protein, s2.b.
+
+
+>Q6. How would you generalize the original code above to work with any set of input
+protein structures? 
+
+```{r}
+library(bio3d)
+s1 <- read.pdb("4AKE") # kinase with drug
+s2 <- read.pdb("1AKE") # kinase no drug
+s3 <- read.pdb("1E4Y") # kinase with drug
+s1.chainA <- trim.pdb(s1, chain="A", elety="CA")
+s2.chainA <- trim.pdb(s2, chain="A", elety="CA")
+s3.chainA <- trim.pdb(s1, chain="A", elety="CA")
+s1.b <- s1.chainA$atom$b
+s2.b <- s2.chainA$atom$b
+s3.b <- s3.chainA$atom$b
+plotb3(s1.b, sse=s1.chainA, typ="l", ylab="Bfactor")
+plotb3(s2.b, sse=s2.chainA, typ="l", ylab="Bfactor")
+plotb3(s3.b, sse=s3.chainA, typ="l", ylab="Bfactor")
+```
+
+
+```{r}
+
+```
+```{r}
+plot_colors <- c("cyan", "orange", "magenta")
+```
+
+
+```{r}
+prot_drug <- function(file, chain, elmnt, fctr) {
+  
+  # Change the colors of the data in the graph
+  plot_colors <- c("blue", "red", "black")
+  
+  
+  # to iterate through every value of the file vector
+  for (i in 1:length(file)) {
+  s1 <- read.pdb(file[i])
+
+  s1.chain <- trim.pdb(s1, chain = chain, elety = elmnt)
+  
+  atom_df <- s1.chain$atom
+  
+  # the "$" syntax cannot take a variable, so s1.fctr takes in all the atom information and selects an entire column based on the factor input
+  s1.fctr <- atom_df[, fctr] 
+  
+  # First plot
+  if (i == 1) {
+    plotb3(s1.fctr, sse = s1.chain, typ = "l", ylab = paste(toupper(fctr), "factor", sep = ""), col = plot_colors[i])
+    
+    # Adding plots to the first plot
+  } else {
+    lines(s1.fctr, col = plot_colors[i])
+  }
+  }
+  
+  # Adding a legend to the graph
+  legend("topright", title = "PDB File Name", file, fill = plot_colors, horiz=TRUE, cex = 0.5, inset = c(0.03, 0.06))
+}
+# Test with three files and the parameters chain A, carbon, and factor b.
+files <- c("4AKE", "1AKE", "1E4Y")
+chains <- "A"
+elements <- "CA"
+factors <- "b"
+
+prot_drug(files, chains, elements, factors)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+

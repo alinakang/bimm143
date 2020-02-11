@@ -1,0 +1,200 @@
+---
+title: "class09"
+author: "Alina Kang"
+date: "2/4/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## K-means clustering
+
+The main k-means function in R is called 'kmeans()'. Let's play with it here.
+
+```{r}
+# Generate some example data for clustering
+tmp <- c(rnorm(30,-3), rnorm(30,3))
+x <- cbind(x=tmp, y=rev(tmp))
+
+plot(x)
+```
+
+
+Use the kmeans() function setting k to 2 and nstart=20
+```{r}
+km <- kmeans(x, centers = 2, nstart = 20)
+km
+plot(x)
+
+#Cluster size
+km$cluster
+```
+```{r}
+length(km$cluster)
+table(km$cluster)
+```
+
+```{r}
+plot(x, col = km$cluster)
+points(km$centers, col="blue", pch=15, cex=3)
+
+```
+
+
+## Hierarchical clustering in R
+
+The main Hierarchical clustering function in R is ca;;ed 'hclust()'
+An important point here is that you have to calculate the distance matrix deom your input data befrore calling 'hclust()'
+
+For this we will use the 'dist()' function first.
+
+```{r}
+# We will use our x again froma abive
+d <- dist(x)
+hc <- hclust(d)
+hc
+```
+
+Folks often view the results of Hierarchical clustering graphically. Let's try passing this to the 'plot()' function.
+
+```{r}
+plot(hc)
+```
+```{r}
+# Draws a dendrogram
+plot(hc)
+abline(h=6, col="red")
+```
+
+
+```{r}
+plot(hc)
+abline(h=6, col="red", lty = 2)
+abline(h=4, col="blue")
+```
+
+To get cluster membership vector I need to "cut" the tree at a certain height to yield my separate cluster branches.
+
+```{r}
+cutree(hc, h=5)
+```
+
+```{r}
+gp4 <- cutree(hc, k=6)
+table(gp4)
+```
+
+```{r}
+# Step 1. Generate some example data for clustering
+x <- rbind(
+ matrix(rnorm(100, mean=0, sd = 0.3), ncol = 2), # c1
+ matrix(rnorm(100, mean = 1, sd = 0.3), ncol = 2), # c2
+ matrix(c(rnorm(50, mean = 1, sd = 0.3), # c3
+ rnorm(50, mean = 0, sd = 0.3)), ncol = 2))
+colnames(x) <- c("x", "y")
+```
+
+```{r}
+# Step 2. Plot the data without clustering
+plot(x)
+```
+
+```{r}
+# Step 3. Generate colors for known clusters
+# (just so we can compare to hclust results)
+col <- as.factor( rep(c("c1","c2","c3"), each=50) )
+plot(x, col=col)
+```
+
+```{r}
+cutree(hc, h=3)
+hclust(dist(x))
+```
+
+```{r}
+cutree(hc, h=6)
+hclust(dist(x))
+```
+
+
+```{r}
+plot(x)
+```
+
+```{r}
+hc <- hclust(dist(x))
+plot(hc)
+abline(h=1.7, col="red")
+cutree(hc, h=6)
+```
+
+```{r}
+grps <- cutree(hc, k=3)
+table(grps)
+```
+
+
+## PCA of UK food data
+```{r}
+x <- read.csv("UK_foods.csv", row.names = 1)
+x
+
+
+# Let's make some plotsto explore our data a bit more
+
+
+barplot(as.matrix(x), beside=T, col=rainbow(nrow(x)))
+```
+
+
+Pair-wise plots
+```{r}
+pairs(x, col=rainbow(10), pch=16)
+```
+
+Principal Component Analysis (PCA) with the 'prcomp()' function.
+
+```{r}
+pca <- prcomp(t(x))
+pca
+#pca
+```
+
+What is my result object 'pca'? I cab check the attributes...
+```{r}
+attributes(pca)
+```
+
+```{r}
+plot(pca$x[,1], pca$x[,2])
+```
+
+```{r}
+summary(pca)
+plot(pca$x[,1], pca$x[,2], xlab="PC1", ylab="PC2", xlim=c(-270,500))
+text(pca$x[,1], pca$x[,2], colnames(x), col= c("black", "red", "blue", "darkgreen"))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
