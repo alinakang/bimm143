@@ -2,7 +2,7 @@
 title: "Class06"
 author: "Alina Kang"
 date: "1/23/2020"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
@@ -148,9 +148,6 @@ rescale <- function(x, na.rm=TRUE, plot=FALSE) {
  return(answer)
 }
 
-```{r}
-rescale(x, plot = TRUE)
-```
 
 
 ```{r}
